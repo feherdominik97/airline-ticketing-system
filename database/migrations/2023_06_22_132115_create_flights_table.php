@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignIdFor(Aircraft::class)->references('id')->on('aircraft');
             $table->string('source');
             $table->string('destination');
-            $table->string('take_off', 5);
+            $table->dateTime('take_off');
             $table->boolean('is_cancelled');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

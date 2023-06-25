@@ -49,13 +49,13 @@ class FlightSeeder extends Seeder
         $aircraft = Aircraft::all()->toArray();
         $flights = [];
 
-        for($i = 0; $i < 100; $i++){
+        for($i = 0; $i < 300; $i++){
             $flights[] = [
                 'airline_id' => $airlines[random_int(0, count($airlines) - 1)]['id'],
                 'aircraft_id' => $aircraft[random_int(0, count($aircraft) - 1)]['id'],
                 'source' => $cities[random_int(0, count($cities) - 1)],
                 'destination' => $cities[random_int(0, count($cities) - 1)],
-                'take_off' => $this->getRandomHours() . ':00',
+                'take_off' => date('Y-m-d H:i:s', rand(strtotime('+1 week'), time())),
                 'is_cancelled' => false
             ];
         }

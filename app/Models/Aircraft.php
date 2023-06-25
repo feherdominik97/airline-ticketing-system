@@ -13,4 +13,8 @@ class Aircraft extends Model
         'name',
         'passenger_limit',
     ];
+
+    public function flight(){
+        return $this->belongsTo(Flight::class, 'aircraft_id', 'id');
+    }
 }

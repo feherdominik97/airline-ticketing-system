@@ -26,10 +26,12 @@ class SoldTicketSeeder extends Seeder
         }
 
         $soldTickets = [];
-        for($i = 0; $i < 100; $i++){
+        for($i = 0; $i < 1600; $i++){
+            $randomFlightAndIndex = $this->getRandomAvailableFlight($flights, $aircraft);
+            $aircraft[$randomFlightAndIndex['index']]--;
             $soldTickets[] = [
                 'user_id' => $users[random_int(0, count($users) - 1)]['id'],
-                'flight_id' => $this->getRandomAvailableFlight($flights, $aircraft)['id'],
+                'flight_id' => $randomFlightAndIndex['flight']['id'],
                 'type' => $types[random_int(0, count($types) - 1)]
             ];
         }
@@ -40,14 +42,15 @@ class SoldTicketSeeder extends Seeder
     /**
      * @throws Exception
      */
-    private function getRandomAvailableFlight($flights, $aircraft)
+    private function getRandomAvailableFlight($flights, $aircraft): array
     {
         $randomIndex = random_int(0, count($flights) - 1);
 
         if ($aircraft[$randomIndex]) {
-            $aircraft[$randomIndex]--;
-
-            return $flights[$randomIndex];
+            return [
+                'flight' => $flights[$randomIndex],
+                'index' => $randomIndex
+            ];
         } else {
 
             return $this->getRandomAvailableFlight($flights, $aircraft);

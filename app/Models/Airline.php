@@ -12,4 +12,8 @@ class Airline extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function flight(){
+        return $this->belongsTo(Flight::class, 'airline_id', 'id');
+    }
 }
