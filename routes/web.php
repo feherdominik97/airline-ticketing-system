@@ -23,13 +23,15 @@ Route::get('/', [AuthController::class, 'show'])->name('login');
 
 Route::middleware('auth')->group(function (){
     Route::get('dashboard', DashboardController::class);
-    Route::prefix('flights')->group(function (){
-        Route::get('', [FlightController::class, 'index']);
-        Route::get('{id}/cancel', [FlightController::class, 'cancelFlight']);
+    Route::prefix('api')->group(function (){
+        Route::prefix('flights')->group(function (){
+            Route::get('', [FlightController::class, 'index']);
+            Route::get('{id}/cancel', [FlightController::class, 'cancelFlight']);
+        });
+        Route::get('airline/{id}/bankrupt', [AirlineController::class, 'goBankrupt']);
+        Route::get('aircraft/{id}/grounded', [AircraftController::class, 'getGrounded']);
+        Route::post('sold-tickets', [SoldTicketController::class, 'store']);
     });
-    Route::get('airline/{id}/bankrupt', [AirlineController::class, 'goBankrupt']);
-    Route::get('aircraft/{id}/grounded', [AircraftController::class, 'getGrounded']);
-    Route::post('sold-tickets', [SoldTicketController::class, 'store']);
 });
 
 Route::post('login', [AuthController::class, 'login'])->name('login-airline-ticketing-system');

@@ -37,7 +37,7 @@
                     </th>
                 </thead>
                 <tbody v-if="flights.length">
-                    <template v-for="(flight, key) in flightsToShow">
+                    <template v-for="(flight, key) in flights">
                         <tr :class="(flight.is_cancelled ? 'pe-none table-danger ' : '') + (rowsActive[key] ? 'table-active' : '')" @click="rowsActive[key] = !rowsActive[key]">
                             <td>
                                 {{ flight.airline.name }}
@@ -79,7 +79,7 @@
                                                 </div>
                                             </div>
                                             <div v-if="flight.availableTickets">
-                                                <button class="btn btn-sm btn-primary" @click="purchaseTicket(flight.id, flight.ticketType)">Purchase</button>
+                                                <button class="btn btn-sm btn-primary" @click="purchaseTicket(flight.id, flight.ticketType, key)">Purchase</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -125,10 +125,10 @@ export default {
         },
         getFlights(){
             axios
-                .get(`/flights?source=${this.source}&start=${this.start}&end=${this.end}`)
+                .get(`/api/flights?source=${this.source}&start=${this.start}&end=${this.end}&page=${this.page}`)
                 .then(({data}) => {
-                    this.flights = data;
-                    this.numberOfPages = Math.ceil((data.length ?? 0) / 50);
+                    this.flights = data.list;
+                    this.numberOfPages = data.numberOfPages;
                 })
                 .catch((error) => {
                     //this.showAlert(error);
@@ -138,38 +138,32 @@ export default {
                 });
         },
         setPage(page){
+            if(this.page === page)
+                return;
+
             this.page = page;
+            this.getFlights();
         },
         formatDate(dateTime){
             return new Date(dateTime).toLocaleString();
         },
-        purchaseTicket(flightId, type){
+        purchaseTicket(flightId, type, key){
             this.showLoader = true;
             axios
                 .post(
-                    '/sold-tickets',
+                    '/api/sold-tickets',
                     {
                         flight_id: flightId,
-                        type: type
+                        type: type,
                     }
                 )
-                .then(() => {
-
-                    this.init();
-                    this.showLoader = false;
+                .then(({data}) => {
+                    this.flights[key] = Object.assign(this.flights[key], data);
                 })
         }
     },
     mounted(){
         this.init();
-    },
-    computed: {
-        flightsToShow() {
-            if(this.flights.length < 25)
-                return this.flights;
-
-            return this.flights.slice((this.page - 1) * 25, this.page * 25 + 1);
-        }
     }
 }
 </script>
